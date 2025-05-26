@@ -85,10 +85,13 @@ auto sperr::Outlier_Coder::encode() -> RTNType
   std::fesetround(FE_TONEAREST);
   assert(FE_TONEAREST == std::fegetround());
   assert(FLT_ROUNDS == 1);
-  std::feclearexcept(FE_INVALID);
-  auto maxint = std::llrint(std::abs(maxerr.err));
-  if (std::fetestexcept(FE_INVALID))
+  // std::feclearexcept(FE_INVALID);
+  if (!std::isfinite(maxerr.err) || (maxerr.err < std::numeric_limits<long long>::lowest()) || (maxerr.err > std::numeric_limits<long long>::max())) {
     return RTNType::FE_Invalid;
+  }
+  auto maxint = std::llrint(std::abs(maxerr.err));
+  // if (std::fetestexcept(FE_INVALID))
+  //   return RTNType::FE_Invalid;
 
   if (maxint <= std::numeric_limits<uint8_t>::max())
     m_instantiate_uvec_coders(UINTType::UINT8);
