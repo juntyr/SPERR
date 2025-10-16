@@ -42,6 +42,11 @@ auto C_API::sperr_comp_2d(const void* src,
     case 3:  // fixed PWE
       encoder->set_tolerance(quality);
       break;
+#ifdef EXPERIMENTING
+    case -4:  // fixed quantisation step
+      encoder->set_direct_q(quality);
+      break;
+#endif
     default:
       return 2;
   }
@@ -191,6 +196,11 @@ auto C_API::sperr_comp_3d(const void* src,
     case 3:  // fixed PWE
       encoder->set_tolerance(quality);
       break;
+#ifdef EXPERIMENTING
+    case -4:  // fixed quantisation step
+      encoder->set_direct_q(quality);
+      break;
+#endif
     default:
       return 2;
   }
