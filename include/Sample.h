@@ -290,9 +290,9 @@ template<class T, uint N>
         size_t block_size_x = std::min(dimx,block_size);
         size_t block_size_y = std::min(dimy,block_size);
         size_t block_size_z = std::min(dimz,block_size);
-        for (size_t i = 0; i < dimx-block_size_x; i+=block_size_x) {
-            for (size_t j = 0; j < dimy-block_size_y; j+=block_size_y) {
-                for (size_t k = 0; k < dimz-block_size_z; k+=block_size_z) {
+        for (size_t i = 0; i < dimx-block_size_x+1; i+=block_size_x) {
+            for (size_t j = 0; j < dimy-block_size_y+1; j+=block_size_y) {
+                for (size_t k = 0; k < dimz-block_size_z+1; k+=block_size_z) {
                     //std::cout<<i<<" "<<j<<" "<<k<<std::endl;
                     size_t start_idx=i*dimyz+j*dimz+k;
                     T min=data[start_idx];
@@ -411,17 +411,17 @@ template<class T, uint N>
             stride=block_size;
         
         size_t dimx=dims[0],dimy=dims[1];
-        size_t block_size_x = std::min(dimx-1,block_size);
-        size_t block_size_y = std::min(dimy-1,block_size);
+        size_t block_size_x = std::min(dimx,block_size);
+        size_t block_size_y = std::min(dimy,block_size);
         
-        for (size_t i = 0; i < dimx-block_size_x; i+=block_size_x) {
-            for (size_t j = 0; j < dimy-block_size_y; j+=block_size_y) {
+        for (size_t i = 0; i < dimx-block_size_x+1; i+=block_size_x) {
+            for (size_t j = 0; j < dimy-block_size_y+1; j+=block_size_y) {
                 
                 size_t start_idx=i*dimy+j;
                 T min=data[start_idx];
                 T max=data[start_idx];
-                for (int ii=0;ii<=block_size_x;ii+=stride){
-                    for(int jj=0;jj<=block_size_y;jj+=stride){
+                for (int ii=0;ii<block_size_x;ii+=stride){
+                    for(int jj=0;jj<block_size_y;jj+=stride){
                            
                         size_t cur_idx=start_idx+ii*dimy+jj;
                         T cur_value=data[cur_idx];
@@ -511,8 +511,8 @@ template<class T, uint N>
                 if(sample_stride<=0)
                     sample_stride=1;
                 if (N==2){                        
-                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize;x_start+=sampleBlockSize){                           
-                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize;y_start+=sampleBlockSize){
+                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize+1;x_start+=sampleBlockSize){                           
+                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize+1;y_start+=sampleBlockSize){
                             if (idx%sample_stride==0){
                                 std::vector<size_t> starts{x_start,y_start};
                                 std::vector<T> s_block;
@@ -524,9 +524,9 @@ template<class T, uint N>
                     }
                 }
                 else if (N==3){                  
-                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize;x_start+=sampleBlockSize){                          
-                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize;y_start+=sampleBlockSize){
-                            for (size_t z_start=0;z_start<dims[2]-sampleBlockSize;z_start+=sampleBlockSize){
+                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize+1;x_start+=sampleBlockSize){                          
+                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize+1;y_start+=sampleBlockSize){
+                            for (size_t z_start=0;z_start<dims[2]-sampleBlockSize+1;z_start+=sampleBlockSize){
                                 if (idx%sample_stride==0){
                                     std::vector<size_t> starts{x_start,y_start,z_start};
                                     std::vector<T> s_block;
