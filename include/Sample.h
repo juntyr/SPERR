@@ -458,7 +458,7 @@ template<class T, uint N>
                 std::vector< std::vector<T> >().swap(sampled_blocks);                              
         size_t totalblock_num=1;
         for(int i=0;i<N;i++){                        
-            totalblock_num*=(size_t)((dims[i]-1)/std::min(dims[i]-1,sampleBlockSize));
+            totalblock_num*=(size_t)(dims[i]/std::min(dims[i],sampleBlockSize));
         }               
         size_t idx=0,block_idx=0;   
         if(profiling){
@@ -470,7 +470,7 @@ template<class T, uint N>
                 
                 for(size_t i=0;i<num_filtered_blocks;i+=sample_stride){
                     std::vector<T> s_block;
-                    sample_blocks<T,N>(data, s_block,dims, starts[i],sampleBlockSize+1);
+                    sample_blocks<T,N>(data, s_block,dims, starts[i],sampleBlockSize);
                     sampled_blocks.push_back(s_block);
                     
                 }
