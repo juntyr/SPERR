@@ -337,9 +337,9 @@ template<class T, uint N>
         assert(starts.size() == N);
         if(N==3){
             size_t startx=starts[0],starty=starts[1],startz=starts[2],dimx=dims[0],dimy=dims[1],dimz=dims[2];
-            size_t block_size_x = std::min(dimx-1,block_size);
-            size_t block_size_y = std::min(dimy-1,block_size);
-            size_t block_size_z = std::min(dimz-1,block_size);
+            size_t block_size_x = std::min(dimx,block_size);
+            size_t block_size_y = std::min(dimy,block_size);
+            size_t block_size_z = std::min(dimz,block_size);
             size_t sample_num = block_size_x*block_size_y*block_size_z;
             sampling_data.resize(sample_num, 0);
             std::cout<<startx<<" "<<starty<<" "<<startz<<" "<<block_size_x<<" "<<block_size_y<<" "<<block_size_z<<std::endl;
@@ -359,8 +359,8 @@ template<class T, uint N>
         }
         else if (N==2){
             size_t startx=starts[0],starty=starts[1],dimx=dims[0],dimy=dims[1];
-            size_t block_size_x = std::min(dimx-1,block_size);
-            size_t block_size_y = std::min(dimy-1,block_size);
+            size_t block_size_x = std::min(dimx,block_size);
+            size_t block_size_y = std::min(dimy,block_size);
             size_t sample_num = block_size_x*block_size_y;
             sampling_data.resize(sample_num, 0);
             
