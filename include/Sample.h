@@ -193,13 +193,17 @@ template<class T, uint N>
         size_t N=dims.size();
 
         if(N==2){
-            size_t dimx=dims[0],dimy=dims[1],startx=starts[0],starty=starts[1],element_num=blocksize*blocksize;
+            
+            size_t dimx=dims[0],dimy=dims[1],startx=starts[0],starty=starts[1];
+            size_t blocksize_x = std::min(dimx,blocksize);
+            size_t blocksize_y = std::min(dimy,blocksize);
+            size_t element_num=blocksize_x*blocksize_y;
             double sum=0,max,min;
             sigma2=0;
             size_t start_idx=startx*dimy+starty;
             max=min=data[start_idx];
-            for(size_t i=startx;i<startx+blocksize;i++){
-                for(size_t j=starty;j<starty+blocksize;j++){
+            for(size_t i=startx;i<startx+blocksize_x;i++){
+                for(size_t j=starty;j<starty+blocksize_y;j++){
                     size_t cur_idx=i*dimy+j;
                     T value=data[cur_idx];
                     sum+=value;
@@ -212,8 +216,8 @@ template<class T, uint N>
             }
             mean=sum/element_num;
 
-            for(size_t i=startx;i<startx+blocksize;i++){
-                for(size_t j=starty;j<starty+blocksize;j++){
+            for(size_t i=startx;i<startx+blocksize_x;i++){
+                for(size_t j=starty;j<starty+blocksize_y;j++){
                     size_t cur_idx=i*dimy+j;
                     T value=data[cur_idx];
                     sigma2+=(value-mean)*(value-mean);
@@ -228,15 +232,20 @@ template<class T, uint N>
 
 
         else if(N==3){
-            size_t dimx=dims[0],dimy=dims[1],dimz=dims[2],startx=starts[0],starty=starts[1],startz=starts[2],element_num=blocksize*blocksize*blocksize;
+            
+            size_t dimx=dims[0],dimy=dims[1],dimz=dims[2],startx=starts[0],starty=starts[1],startz=starts[2];
+            size_t blocksize_x = std::min(dimx,blocksize);
+            size_t blocksize_y = std::min(dimy,blocksize);
+            size_t blocksize_z = std::min(dimz,blocksize);
+            size_t element_num=blocksize_x*blocksize_y*blocksize_z;
             size_t dimyz=dimy*dimz;
             double sum=0,max,min;
             sigma2=0;
             size_t start_idx=startx*dimyz+starty*dimz+startz;
             max=min=data[start_idx];
-            for(size_t i=startx;i<startx+blocksize;i++){
-                for(size_t j=starty;j<starty+blocksize;j++){
-                    for(size_t k=startz;k<startz+blocksize;k++){
+            for(size_t i=startx;i<startx+blocksize_x;i++){
+                for(size_t j=starty;j<starty+blocksize_y;j++){
+                    for(size_t k=startz;k<startz+blocksize_z;k++){
                         size_t cur_idx=i*dimyz+j*dimz+k;
                         T value=data[cur_idx];
                         sum+=value;
@@ -249,9 +258,9 @@ template<class T, uint N>
 
             }
             mean=sum/element_num;
-            for(size_t i=startx;i<startx+blocksize;i++){
-                for(size_t j=starty;j<starty+blocksize;j++){
-                    for(size_t k=startz;k<startz+blocksize;k++){
+            for(size_t i=startx;i<startx+blocksize_x;i++){
+                for(size_t j=starty;j<starty+blocksize_y;j++){
+                    for(size_t k=startz;k<startz+blocksize_z;k++){
                         size_t cur_idx=i*dimyz+j*dimz+k;
                         T value=data[cur_idx];
                         sigma2+=(value-mean)*(value-mean);
@@ -278,17 +287,19 @@ template<class T, uint N>
         if (stride==0)
             stride=block_size;
         size_t dimx=dims[0],dimy=dims[1],dimz=dims[2],dimyz=dimy*dimz;
-        
-        for (size_t i = 0; i < dimx-block_size; i+=block_size) {
-            for (size_t j = 0; j < dimy-block_size; j+=block_size) {
-                for (size_t k = 0; k < dimz-block_size; k+=block_size) {
+        size_t block_size_x = std::min(dimx,block_size);
+        size_t block_size_y = std::min(dimy,block_size);
+        size_t block_size_z = std::min(dimz,block_size);
+        for (size_t i = 0; i < dimx-block_size_x; i+=block_size_x) {
+            for (size_t j = 0; j < dimy-block_size_y; j+=block_size_y) {
+                for (size_t k = 0; k < dimz-block_size_z; k+=block_size_z) {
                     //std::cout<<i<<" "<<j<<" "<<k<<std::endl;
                     size_t start_idx=i*dimyz+j*dimz+k;
                     T min=data[start_idx];
                     T max=data[start_idx];
-                    for (int ii=0;ii<=block_size;ii+=stride){
-                        for(int jj=0;jj<=block_size;jj+=stride){
-                            for (int kk=0;kk<=block_size;kk+=stride){
+                    for (int ii=0;ii<=block_size_x;ii+=stride){
+                        for(int jj=0;jj<=block_size_y;jj+=stride){
+                            for (int kk=0;kk<=block_size_z;kk+=stride){
                                 size_t cur_idx=start_idx+ii*dimyz+jj*dimz+kk;
                                 T cur_value=data[cur_idx];
                                 if (cur_value<min)
@@ -325,16 +336,19 @@ template<class T, uint N>
         assert(dims.size() == N);
         assert(starts.size() == N);
         if(N==3){
-        
-            size_t sample_num = block_size*block_size*block_size;
+            size_t startx=starts[0],starty=starts[1],startz=starts[2],dimx=dims[0],dimy=dims[1],dimz=dims[2];
+            size_t block_size_x = std::min(dimx,block_size);
+            size_t block_size_y = std::min(dimy,block_size);
+            size_t block_size_z = std::min(dimz,block_size);
+            size_t sample_num = block_size_x*block_size_y*block_size_z;
             sampling_data.resize(sample_num, 0);
 
-            size_t startx=starts[0],starty=starts[1],startz=starts[2],dimx=dims[0],dimy=dims[1],dimz=dims[2];
-            size_t square_block_size=block_size*block_size,dimyz=dimy*dimz;
-            for (size_t i = 0; i < block_size; i++) {
-                for (size_t j = 0; j < block_size; j++) {
-                    for (size_t k = 0; k < block_size; k++) {
-                        size_t sample_idx=i*square_block_size+j*block_size+k;
+            
+            size_t square_block_size=block_size_y*block_size_z,dimyz=dimy*dimz;
+            for (size_t i = 0; i < block_size_x; i++) {
+                for (size_t j = 0; j < block_size_y; j++) {
+                    for (size_t k = 0; k < block_size_z; k++) {
+                        size_t sample_idx=i*square_block_size+j*block_size_z+k;
                         size_t idx=(i+startx)*dimyz+(j+starty)*dimz+k+startz;
                         sampling_data[sample_idx]=data[idx];
                         
@@ -343,14 +357,17 @@ template<class T, uint N>
             }
         }
         else if (N==2){
-            size_t sample_num = block_size*block_size;
-            sampling_data.resize(sample_num, 0);
             size_t startx=starts[0],starty=starts[1],dimx=dims[0],dimy=dims[1];
+            size_t block_size_x = std::min(dimx,block_size);
+            size_t block_size_y = std::min(dimy,block_size);
+            size_t sample_num = block_size_x*block_size_y;
+            sampling_data.resize(sample_num, 0);
             
-            for (size_t i = 0; i < block_size; i++) {
-                for (size_t j = 0; j < block_size; j++) {
+            
+            for (size_t i = 0; i < block_size_x; i++) {
+                for (size_t j = 0; j < block_size_y; j++) {
                     
-                    size_t sample_idx=i*block_size+j;
+                    size_t sample_idx=i*block_size_y+j;
                     size_t idx=(i+startx)*dimy+(j+starty);
                     sampling_data[sample_idx]=data[idx];
                         
@@ -360,12 +377,14 @@ template<class T, uint N>
 
         }
         else if(N==1){
-            size_t sample_num = block_size;
+            size_t startx=starts[0],dimx=dims[0];
+            size_t block_size_x = std::min(dimx,block_size);
+            size_t sample_num = block_size_x;
             sampling_data.resize(sample_num, 0);
 
-            size_t startx=starts[0],dimx=dims[0];
             
-            for (size_t i = 0; i < block_size; i++) {
+            
+            for (size_t i = 0; i < block_size_x; i++) {
                 
                     
                 size_t sample_idx=i;
@@ -391,15 +410,17 @@ template<class T, uint N>
             stride=block_size;
         
         size_t dimx=dims[0],dimy=dims[1];
+        size_t block_size_x = std::min(dimx,block_size);
+        size_t block_size_y = std::min(dimy,block_size);
         
-        for (size_t i = 0; i < dimx-block_size; i+=block_size) {
-            for (size_t j = 0; j < dimy-block_size; j+=block_size) {
+        for (size_t i = 0; i < dimx-block_size_x; i+=block_size_x) {
+            for (size_t j = 0; j < dimy-block_size_y; j+=block_size_y) {
                 
                 size_t start_idx=i*dimy+j;
                 T min=data[start_idx];
                 T max=data[start_idx];
-                for (int ii=0;ii<=block_size;ii+=stride){
-                    for(int jj=0;jj<=block_size;jj+=stride){
+                for (int ii=0;ii<=block_size_x;ii+=stride){
+                    for(int jj=0;jj<=block_size_y;jj+=stride){
                            
                         size_t cur_idx=start_idx+ii*dimy+jj;
                         T cur_value=data[cur_idx];
