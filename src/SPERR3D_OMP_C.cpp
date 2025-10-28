@@ -333,10 +333,10 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
           for(int i=0;i<3;i++){                      
               totalblock_num*=(size_t)(reversed_dims[i]/sample_dims[i]);
           }
-          std::cout<<"t1"<<std::endl;
+
           sperr::profiling_block_3d<double,3>(chunk.data(),reversed_dims,starts,block_size, prof_abs_threshold,profStride);
           
-          std::cout<<"t2"<<std::endl;
+
 
 
           size_t num_filtered_blocks=starts.size();
@@ -346,9 +346,9 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
 
 
           }
-          std::cout<<"t3"<<std::endl;
+
           sperr::sampleBlocks<double,3>(chunk.data(),reversed_dims,block_size,sampled_blocks,sample_rate,profiling,starts,false);//todo: test var_first = true
-          std::cout<<"t4"<<std::endl;
+
           size_t sample_num=0;
           for(auto &block:sampled_blocks)
             sample_num += block.size();
@@ -377,7 +377,7 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
                 test_compressor->set_qoi_tol(bs_qoi_tol);
 
               for (auto sampled_block:sampled_blocks){
-                std::cout<<sampled_block.size()<<std::endl;
+
                 test_compressor->take_data(std::move(sampled_block));
                 
                 
