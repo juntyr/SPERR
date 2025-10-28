@@ -480,7 +480,7 @@ template<class T, uint N>
                 std::vector< std::pair<double,std::vector<size_t> > >block_heap;
                 for(size_t i=0;i<num_filtered_blocks;i++){
                     double mean,sigma2,range;
-                    blockwise_profiling<T>(data,dims, starts[i],sampleBlockSize+1, mean,sigma2,range);
+                    blockwise_profiling<T>(data,dims, starts[i],sampleBlockSize, mean,sigma2,range);
                     block_heap.push_back(std::pair<double,std::vector<size_t> >(sigma2,starts[i]));
                     
                 }
@@ -496,7 +496,7 @@ template<class T, uint N>
                 for(size_t i=0;i<sampled_block_num;i++){
                     std::vector<T> s_block;
                  
-                    sample_blocks<T,N>(data, s_block,dims, block_heap.front().second,sampleBlockSize+1);
+                    sample_blocks<T,N>(data, s_block,dims, block_heap.front().second,sampleBlockSize);
                   
                     sampled_blocks.push_back(s_block);
                     std::pop_heap(block_heap.begin(),block_heap.end());
@@ -516,7 +516,7 @@ template<class T, uint N>
                             if (idx%sample_stride==0){
                                 std::vector<size_t> starts{x_start,y_start};
                                 std::vector<T> s_block;
-                                sample_blocks<T,N>(data, s_block,dims, starts,sampleBlockSize+1);
+                                sample_blocks<T,N>(data, s_block,dims, starts,sampleBlockSize);
                                 sampled_blocks.push_back(s_block);
                             }
                             idx+=1;
@@ -530,7 +530,7 @@ template<class T, uint N>
                                 if (idx%sample_stride==0){
                                     std::vector<size_t> starts{x_start,y_start,z_start};
                                     std::vector<T> s_block;
-                                    sample_blocks<T,N>(data, s_block,dims, starts,sampleBlockSize+1);
+                                    sample_blocks<T,N>(data, s_block,dims, starts,sampleBlockSize);
                                     sampled_blocks.push_back(s_block);
                                 }
                                 idx+=1;
