@@ -328,9 +328,8 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
           //double sample_ratio = 5e-3;
           
           std::vector<size_t> reversed_dims = {chunk_dims[2],chunk_dims[1],chunk_dims[0]};
-          std::cout<<chunk_dims[0]<<" "<<chunk_dims[1]<<" "<<chunk_dims[2]<<std::endl;
           std::vector<size_t> sample_dims = {std::min(chunk_dims[2],block_size+1),std::min(chunk_dims[1],block_size+1),std::min(chunk_dims[0],block_size+1)};
-          std::array<size_t,3> sample_dims_arr = {sample_dims[0],sample_dims[1],sample_dims[2]};
+          std::array<size_t,3> sample_dims_arr = {sample_dims[2],sample_dims[1],sample_dims[0]};
           for(int i=0;i<3;i++){                      
               totalblock_num*=(size_t)((reversed_dims[i]-1)/sample_dims[i]);
           }
