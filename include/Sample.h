@@ -342,6 +342,7 @@ template<class T, uint N>
             size_t block_size_z = std::min(dimz-1,block_size);
             size_t sample_num = block_size_x*block_size_y*block_size_z;
             sampling_data.resize(sample_num, 0);
+            std::cout<<startx<<" "<<starty<<" "<<startz<<" "<<block_size_x<<" "<<block_size_y<<" "<<block_size_z<<std::endl;
 
             
             size_t square_block_size=block_size_y*block_size_z,dimyz=dimy*dimz;
