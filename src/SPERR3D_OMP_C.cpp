@@ -313,7 +313,7 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
           auto sampled_data = m_sample_center(chunk,chunk_dims,sample_dims);
           */
 
-          size_t block_size = 31;
+          size_t block_size = 32;
 
           std::vector<std::vector<double>>sampled_blocks;
           std::vector<std::vector<size_t>>starts;
@@ -328,10 +328,10 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
           //double sample_ratio = 5e-3;
           
           std::vector<size_t> reversed_dims = {chunk_dims[2],chunk_dims[1],chunk_dims[0]};
-          std::vector<size_t> sample_dims = {std::min(chunk_dims[2],block_size+1),std::min(chunk_dims[1],block_size+1),std::min(chunk_dims[0],block_size+1)};
+          std::vector<size_t> sample_dims = {std::min(chunk_dims[2],block_size),std::min(chunk_dims[1],block_size),std::min(chunk_dims[0],block_size)};
           std::array<size_t,3> sample_dims_arr = {sample_dims[2],sample_dims[1],sample_dims[0]};
           for(int i=0;i<3;i++){                      
-              totalblock_num*=(size_t)((reversed_dims[i]-1)/sample_dims[i]);
+              totalblock_num*=(size_t)(reversed_dims[i]/sample_dims[i]);
           }
           std::cout<<"t1"<<std::endl;
           sperr::profiling_block_3d<double,3>(chunk.data(),reversed_dims,starts,block_size, prof_abs_threshold,profStride);
