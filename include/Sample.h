@@ -195,8 +195,8 @@ template<class T, uint N>
         if(N==2){
             
             size_t dimx=dims[0],dimy=dims[1],startx=starts[0],starty=starts[1];
-            size_t blocksize_x = std::min(dimx-1,blocksize);
-            size_t blocksize_y = std::min(dimy-1,blocksize);
+            size_t blocksize_x = std::min(dimx,blocksize);
+            size_t blocksize_y = std::min(dimy,blocksize);
             size_t element_num=blocksize_x*blocksize_y;
             double sum=0,max,min;
             sigma2=0;
@@ -234,9 +234,9 @@ template<class T, uint N>
         else if(N==3){
             
             size_t dimx=dims[0],dimy=dims[1],dimz=dims[2],startx=starts[0],starty=starts[1],startz=starts[2];
-            size_t blocksize_x = std::min(dimx-1,blocksize);
-            size_t blocksize_y = std::min(dimy-1,blocksize);
-            size_t blocksize_z = std::min(dimz-1,blocksize);
+            size_t blocksize_x = std::min(dimx,blocksize);
+            size_t blocksize_y = std::min(dimy,blocksize);
+            size_t blocksize_z = std::min(dimz,blocksize);
             size_t element_num=blocksize_x*blocksize_y*blocksize_z;
             size_t dimyz=dimy*dimz;
             double sum=0,max,min;
@@ -287,9 +287,9 @@ template<class T, uint N>
         if (stride==0)
             stride=block_size;
         size_t dimx=dims[0],dimy=dims[1],dimz=dims[2],dimyz=dimy*dimz;
-        size_t block_size_x = std::min(dimx-1,block_size);
-        size_t block_size_y = std::min(dimy-1,block_size);
-        size_t block_size_z = std::min(dimz-1,block_size);
+        size_t block_size_x = std::min(dimx,block_size);
+        size_t block_size_y = std::min(dimy,block_size);
+        size_t block_size_z = std::min(dimz,block_size);
         for (size_t i = 0; i < dimx-block_size_x; i+=block_size_x) {
             for (size_t j = 0; j < dimy-block_size_y; j+=block_size_y) {
                 for (size_t k = 0; k < dimz-block_size_z; k+=block_size_z) {
@@ -297,9 +297,9 @@ template<class T, uint N>
                     size_t start_idx=i*dimyz+j*dimz+k;
                     T min=data[start_idx];
                     T max=data[start_idx];
-                    for (int ii=0;ii<=block_size_x;ii+=stride){
-                        for(int jj=0;jj<=block_size_y;jj+=stride){
-                            for (int kk=0;kk<=block_size_z;kk+=stride){
+                    for (int ii=0;ii<block_size_x;ii+=stride){
+                        for(int jj=0;jj<block_size_y;jj+=stride){
+                            for (int kk=0;kk<block_size_z;kk+=stride){
                                 size_t cur_idx=start_idx+ii*dimyz+jj*dimz+kk;
                                 T cur_value=data[cur_idx];
                                 if (cur_value<min)
