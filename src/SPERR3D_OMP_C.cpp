@@ -326,13 +326,13 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
 
           double prof_abs_threshold = ebs[quantiles[0]];
           //double sample_ratio = 5e-3;
-          for(int i=0;i<3;i++){                      
-              totalblock_num*=(size_t)((chunk_dims[i]-1)/block_size);
-          }
+          
           std::vector<size_t> reversed_dims = {chunk_dims[2],chunk_dims[1],chunk_dims[0]};
           std::vector<size_t> sample_dims = {std::min(chunk_dims[2],block_size+1),std::min(chunk_dims[1],block_size+1),std::min(chunk_dims[0],block_size+1)};
           std::array<size_t,3> sample_dims_arr = {sample_dims[0],sample_dims[1],sample_dims[2]};
-         
+          for(int i=0;i<3;i++){                      
+              totalblock_num*=(size_t)((reversed_dims[i]-1)/sample_dims[i]);
+          }
           sperr::profiling_block_3d<double,3>(chunk.data(),reversed_dims,starts,block_size, prof_abs_threshold,profStride);
           
           
