@@ -454,14 +454,10 @@ template<class T, uint N>
         for(int i=0;i<sampled_blocks.size();i++){
                     std::vector< T >().swap(sampled_blocks[i]);                
                 }
-                std::vector< std::vector<T> >().swap(sampled_blocks);
-        for(int i=0;i<sampled_blocks.size();i++){
-            std::vector< T >().swap(sampled_blocks[i]);                  
-        }
-        std::vector< std::vector<T> >().swap(sampled_blocks);                               
+                std::vector< std::vector<T> >().swap(sampled_blocks);                              
         size_t totalblock_num=1;
         for(int i=0;i<N;i++){                        
-            totalblock_num*=(int)((dims[i]-1)/sampleBlockSize);
+            totalblock_num*=(int)((dims[i]-1)/std::min(dims[i],sampleBlockSize));
         }               
         size_t idx=0,block_idx=0;   
         if(profiling){
