@@ -293,7 +293,6 @@ template<class T, uint N>
         for (size_t i = 0; i < dimx-block_size_x+1; i+=block_size_x) {
             for (size_t j = 0; j < dimy-block_size_y+1; j+=block_size_y) {
                 for (size_t k = 0; k < dimz-block_size_z+1; k+=block_size_z) {
-                    //std::cout<<i<<" "<<j<<" "<<k<<std::endl;
                     size_t start_idx=i*dimyz+j*dimz+k;
                     T min=data[start_idx];
                     T max=data[start_idx];
@@ -342,7 +341,6 @@ template<class T, uint N>
             size_t block_size_z = std::min(dimz,block_size);
             size_t sample_num = block_size_x*block_size_y*block_size_z;
             sampling_data.resize(sample_num, 0);
-            std::cout<<startx<<" "<<starty<<" "<<startz<<" "<<block_size_x<<" "<<block_size_y<<" "<<block_size_z<<std::endl;
 
             
             size_t square_block_size=block_size_y*block_size_z,dimyz=dimy*dimz;

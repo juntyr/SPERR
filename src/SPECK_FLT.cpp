@@ -471,7 +471,6 @@ void sperr::SPECK_FLT::m_midtread_inv_quantize()
 auto sperr::SPECK_FLT::compress(bool use_high_prec) -> RTNType
 {
   const auto total_vals = size_t(m_dims[0]) * m_dims[1] * m_dims[2];
-  std::cout<<m_dims[0]<<" "<<m_dims[1]<<" "<<m_dims[2]<<std::endl;
   if (m_vals_d.empty() || m_vals_d.size() != total_vals)
     return RTNType::Error;
   if (m_mode == sperr::CompMode::Unknown)
@@ -479,6 +478,8 @@ auto sperr::SPECK_FLT::compress(bool use_high_prec) -> RTNType
 
   m_has_outlier = false;
   m_has_lossless = false;
+
+
 
   //bool hp = (use_high_prec and (m_mode == CompMode::PWE and m_quality<=1e-10));
   bool hp = false;
@@ -512,7 +513,6 @@ CMP_START:
   }
   auto mean = m_conditioner.get_mean();
 
- std::cout<<"s1"<<std::endl;
 
   // Step 2: wavelet transform
   m_cdf.take_data(std::move(m_vals_d), m_dims);
@@ -532,7 +532,6 @@ FIXED_RATE_HIGH_PREC_LABEL:
   m_q = m_estimate_q(param_q, high_prec);
   assert(m_q > 0.0);
   m_conditioner.save_q(m_condi_bitstream, m_q);
-std::cout<<"s2"<<std::endl;
   // Step 3: quantize floating-point coefficients to integers.
   // This step also establishes the integer length used by the encoder/decoder.
   auto rtn = m_midtread_quantize();
@@ -668,7 +667,6 @@ std::cout<<"s2"<<std::endl;
 
   }
   
-std::cout<<"s3"<<std::endl;   
 
   //or (qoi!=nullptr and !qoi->check_compliance(m_vals_orig[i],m_vals_d[i]) )
   // Step 4: Integer SPECK encoding
@@ -722,7 +720,6 @@ std::cout<<"s3"<<std::endl;
       goto FIXED_RATE_HIGH_PREC_LABEL;
     }
   }
-std::cout<<"s4"<<std::endl; 
   return RTNType::Good;
 }
 
