@@ -508,9 +508,12 @@ template<class T, uint N>
                 size_t sample_stride=(size_t)(1.0/sample_rate);
                 if(sample_stride<=0)
                     sample_stride=1;
-                if (N==2){                        
-                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize+1;x_start+=sampleBlockSize){                           
-                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize+1;y_start+=sampleBlockSize){
+
+                if (N==2){        
+                    size_t sampleBlockSize_x = std::min(dims[0],sampleBlockSize);
+                    size_t sampleBlockSize_y = std::min(dims[1],sampleBlockSize);                
+                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize_x+1;x_start+=sampleBlockSize_x){                           
+                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize_y+1;y_start+=sampleBlockSize_y){
                             if (idx%sample_stride==0){
                                 std::vector<size_t> starts{x_start,y_start};
                                 std::vector<T> s_block;
@@ -521,10 +524,13 @@ template<class T, uint N>
                         }
                     }
                 }
-                else if (N==3){                  
-                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize+1;x_start+=sampleBlockSize){                          
-                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize+1;y_start+=sampleBlockSize){
-                            for (size_t z_start=0;z_start<dims[2]-sampleBlockSize+1;z_start+=sampleBlockSize){
+                else if (N==3){
+                    size_t sampleBlockSize_x = std::min(dims[0],sampleBlockSize);
+                    size_t sampleBlockSize_y = std::min(dims[1],sampleBlockSize);                      
+                    size_t sampleBlockSize_z = std::min(dims[2],sampleBlockSize);                      
+                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize_x+1;x_start+=sampleBlockSize_x){                          
+                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize_y+1;y_start+=sampleBlockSize_y){
+                            for (size_t z_start=0;z_start<dims[2]-sampleBlockSize_z+1;z_start+=sampleBlockSize_z){
                                 if (idx%sample_stride==0){
                                     std::vector<size_t> starts{x_start,y_start,z_start};
                                     std::vector<T> s_block;
@@ -539,19 +545,25 @@ template<class T, uint N>
             }
             else{
                 std::vector <std::vector<size_t> > blocks_starts;
+
                 if (N==2){  
-                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize;x_start+=sampleBlockSize){                           
-                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize;y_start+=sampleBlockSize){
+                    size_t sampleBlockSize_x = std::min(dims[0],sampleBlockSize);
+                    size_t sampleBlockSize_y = std::min(dims[1],sampleBlockSize);          
+                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize_x+1;x_start+=sampleBlockSize_x){                           
+                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize_y+1;y_start+=sampleBlockSize_y){
                            
                                 blocks_starts.push_back(std::vector<size_t>{x_start,y_start});
                         }
                     }
 
                 }
-                else if (N==3){           
-                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize;x_start+=sampleBlockSize){                          
-                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize;y_start+=sampleBlockSize){
-                            for (size_t z_start=0;z_start<dims[2]-sampleBlockSize;z_start+=sampleBlockSize){
+                else if (N==3){      
+                    size_t sampleBlockSize_x = std::min(dims[0],sampleBlockSize);
+                    size_t sampleBlockSize_y = std::min(dims[1],sampleBlockSize);                      
+                    size_t sampleBlockSize_z = std::min(dims[2],sampleBlockSize);           
+                    for (size_t x_start=0;x_start<dims[0]-sampleBlockSize_x+1;x_start+=sampleBlockSize_x){                          
+                        for (size_t y_start=0;y_start<dims[1]-sampleBlockSize_y+1;y_start+=sampleBlockSize_y){
+                            for (size_t z_start=0;z_start<dims[2]-sampleBlockSize_z+1;z_start+=sampleBlockSize_z){
                                 blocks_starts.push_back(std::vector<size_t>{x_start,y_start,z_start});
                             }
                         }
@@ -561,7 +573,7 @@ template<class T, uint N>
                     std::vector< std::pair<double,std::vector<size_t> > >block_heap;
                     for(size_t i=0;i<totalblock_num;i++){
                         double mean,sigma2,range;
-                        blockwise_profiling<T>(data,dims, blocks_starts[i],sampleBlockSize+1, mean,sigma2,range);
+                        blockwise_profiling<T>(data,dims, blocks_starts[i],sampleBlockSize, mean,sigma2,range);
                         block_heap.push_back(std::pair<double,std::vector<size_t> >(sigma2,blocks_starts[i]));
                     }
                     std::make_heap(block_heap.begin(),block_heap.end());
@@ -570,7 +582,7 @@ template<class T, uint N>
                         sampled_block_num=1;
                     for(size_t i=0;i<sampled_block_num;i++){
                         std::vector<T> s_block;
-                        sample_blocks<T,N>(data, s_block,dims, block_heap.front().second,sampleBlockSize+1);
+                        sample_blocks<T,N>(data, s_block,dims, block_heap.front().second,sampleBlockSize);
                         sampled_blocks.push_back(s_block);
                         std::pop_heap(block_heap.begin(),block_heap.end());
                         block_heap.pop_back();
