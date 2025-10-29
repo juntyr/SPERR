@@ -508,7 +508,7 @@ CMP_START:
   m_conditioner.set_high_prec(hp);
   m_condi_bitstream = m_conditioner.condition(m_vals_d, m_dims);
   if (qoi == nullptr and m_conditioner.is_constant(m_condi_bitstream[0])){
-    //std::cout<<"constant!"<<std::endl;
+    std::cout<<"constant!"<<std::endl;
     return RTNType::Good;
   }
   auto mean = m_conditioner.get_mean();
