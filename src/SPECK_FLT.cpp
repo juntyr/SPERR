@@ -825,7 +825,7 @@ auto sperr::SPECK_FLT::block_qoi_outlier_correction(bool use_high_prec) -> RTNTy
   auto mean = m_conditioner.get_mean();
    
   size_t n1 = m_dims[2], n2 = m_dims[1], n3 = m_dims[0];
-  size_t block_size_x = qoi_block_size[0],block_size_y = qoi_block_size[1]，block_size_z = qoi_block_size[2];
+  size_t block_size_x = qoi_block_size[0],block_size_y = qoi_block_size[1], block_size_z = qoi_block_size[2];
   uint32_t dim0_offset = n2 * n3;
   uint32_t dim1_offset = n3;
   uint32_t num_block_1 = (n1 - 1) / block_size_z + 1;

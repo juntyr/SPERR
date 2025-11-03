@@ -57,7 +57,7 @@ class SPERR3D_OMP_C {
   double qoi_tol = 0.0;
   //double block_qoi_tol = 0.0;
   //int qoi_block_size = 1;
-  auto qoi_block_sizes = std::array<size_t, 3>{1, 1, 1};
+  std::array<size_t, 3> qoi_block_sizes = std::array<size_t, 3>{1, 1, 1};
   size_t qoi_block_ele_num = 1;
   double qoi_k = 3.0;
   bool m_high_prec = false;

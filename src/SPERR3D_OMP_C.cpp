@@ -174,7 +174,7 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
 
         double q = 0.999;
 
-        if(((qoi_meta.qoi_id == 1 and qoi_meta.qoi_string == "x^3") or qoi_meta.qoi_id == 9 ) and qoi_block_size <=4)
+        if(((qoi_meta.qoi_id == 1 and qoi_meta.qoi_string == "x^3") or qoi_meta.qoi_id == 9 ) and qoi_block_ele_num <= 64)
           qoi_k = 2.0;
 
         rate = estimate_rate_Hoeffdin(qoi_block_ele_num,1,q,qoi_k);
@@ -255,7 +255,7 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
 
 
 
-        if(qoi_block_size > 1){//regional 
+        if(qoi_block_ele_num > 1){//regional 
           //adjust qoieb
           compressor->set_qoi_tol(bs_qoi_tol);
           compressor->set_qoi_block_size(qoi_block_sizes[0],qoi_block_sizes[1],qoi_block_sizes[2]);
@@ -378,7 +378,7 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
               test_compressor->set_tolerance(cur_abs_eb);
               test_compressor->set_qoi(qoi);
               double cur_br = 0;
-              if(qoi_block_size > 1)
+              if(qoi_block_ele_num > 1)
                 test_compressor->set_qoi_tol(bs_qoi_tol);
 
               for (auto sampled_block:sampled_blocks){

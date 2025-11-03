@@ -96,7 +96,7 @@ class SPECK_FLT {
   Outlier_Coder m_out_coder;
   std::shared_ptr<QoZ::concepts::QoIInterface<double> > qoi = nullptr;
   double qoi_tol = 0.0;
-  auto qoi_block_sizes = std::array<size_t, 3>{1, 1, 1};
+  std::array<size_t, 3> qoi_block_sizes = std::array<size_t, 3>{1, 1, 1};
   size_t qoi_block_ele_num = 1;
   Lossless_zstd zstd_encoder;
 
