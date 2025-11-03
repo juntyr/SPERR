@@ -766,5 +766,5 @@ auto sperr::calc_qoi_maxerr_blocked(const T* ori, const T* dec, std::array<size_
   return {max_qoi_diff,max_qoi_diff/(max_qoi-min_qoi)};
 }
 
-template auto sperr::calc_qoi_maxerr_blocked(const double* , const double*, std::array<size_t,3>, std::shared_ptr<QoZ::concepts::QoIInterface<double> > , int ) -> std::array<double, 2>;
-template auto sperr::calc_qoi_maxerr_blocked(const float* , const float*, std::array<size_t,3>, std::shared_ptr<QoZ::concepts::QoIInterface<double> > , int ) -> std::array<double, 2>;
+template auto sperr::calc_qoi_maxerr_blocked(const double* , const double*, std::array<size_t,3>, std::shared_ptr<QoZ::concepts::QoIInterface<double> > , std::array<size_t,3> block_sizes ) -> std::array<double, 2>;
+template auto sperr::calc_qoi_maxerr_blocked(const float* , const float*, std::array<size_t,3>, std::shared_ptr<QoZ::concepts::QoIInterface<double> > , std::array<size_t,3> block_sizes ) -> std::array<double, 2>;
