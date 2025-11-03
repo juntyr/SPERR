@@ -458,7 +458,7 @@ int main(int argc, char* argv[])
               qoi_err_rel = qoi_err[1];
             }
             else{
-              auto qoi_err = sperr::calc_qoi_maxerr_blocked(inputf , outputf.data(), dims, qoi,qoi_block_size);
+              auto qoi_err = sperr::calc_qoi_maxerr_blocked(inputf , outputf.data(), dims, qoi,qoi_block_sizes);
               qoi_err_abs = qoi_err[0];
               qoi_err_rel = qoi_err[1];
             }
