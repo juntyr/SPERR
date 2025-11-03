@@ -38,6 +38,10 @@ namespace QoZ {
                 meta.qoi_id = 2;
                 meta.qoi_base = 2.0;
             }
+            else if(qoi_string == "log10(x)"  or qoi_string == "Log10(x)"  or qoi_string == "Log(x,10)"  or qoi_string == "log(x,10)"){
+                meta.qoi_id = 2;
+                meta.qoi_base = 10.0;
+            }
 
             else if (qoi_string == "x^3" or qoi_string == "x**3")
                 meta.qoi_id = 9;
