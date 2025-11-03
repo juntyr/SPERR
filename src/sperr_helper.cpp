@@ -662,7 +662,7 @@ template auto sperr::calc_qoi_maxerr(const float* , const float* , size_t , std:
 
 
 template <typename T>
-auto sperr::calc_qoi_maxerr_blocked(const T* ori, const T* dec, std::array<size_t,3> dims, std::shared_ptr<QoZ::concepts::QoIInterface<double> > qoi, int block_size) -> std::array<double, 2>{
+auto sperr::calc_qoi_maxerr_blocked(const T* ori, const T* dec, std::array<size_t,3> dims, std::shared_ptr<QoZ::concepts::QoIInterface<double> > qoi, std::array<size_t,3> block_sizes) -> std::array<double, 2>{
   
   uint32_t n1 = dims[2];
   uint32_t n2 = dims[1];
@@ -670,9 +670,9 @@ auto sperr::calc_qoi_maxerr_blocked(const T* ori, const T* dec, std::array<size_
 
   uint32_t dim0_offset = n2 * n3;
   uint32_t dim1_offset = n3;
-  uint32_t num_block_1 = (n1 - 1) / block_size + 1;
-  uint32_t num_block_2 = (n2 - 1) / block_size + 1;
-  uint32_t num_block_3 = (n3 - 1) / block_size + 1;
+  uint32_t num_block_1 = (n1 - 1) / block_sizes[2] + 1;
+  uint32_t num_block_2 = (n2 - 1) / block_sizes[1] + 1;
+  uint32_t num_block_3 = (n3 - 1) / block_sizes[0] + 1;
   uint32_t index = 0;
 
   double max_qoi_diff = 0;
@@ -684,15 +684,15 @@ auto sperr::calc_qoi_maxerr_blocked(const T* ori, const T* dec, std::array<size_
   T const * data_x_pos = ori;
   T const * dec_data_x_pos = dec;
   for(size_t i=0; i<num_block_1; i++){
-      size_t size_1 = (i == num_block_1 - 1) ? n1 - i * block_size : block_size;
+      size_t size_1 = (i == num_block_1 - 1) ? n1 - i * block_sizes[2] : block_sizes[2];
       T const * data_y_pos = data_x_pos;
       T const * dec_data_y_pos = dec_data_x_pos;
       for(size_t j=0; j<num_block_2; j++){
-          size_t size_2 = (j == num_block_2 - 1) ? n2 - j * block_size : block_size;
+          size_t size_2 = (j == num_block_2 - 1) ? n2 - j * block_sizes[1] : block_sizes[1];
           T const * data_z_pos = data_y_pos;
           T const * dec_data_z_pos = dec_data_y_pos;
           for(size_t k=0; k<num_block_3; k++){
-              size_t size_3 = (k == num_block_3 - 1) ? n3 - k * block_size : block_size;
+              size_t size_3 = (k == num_block_3 - 1) ? n3 - k * block_sizes[0] : block_sizes[0];
 
               //bool compute_block = (size_1==1 or size_1 == block_size) and (size_2==1 or size_2 == block_size) and size_3 == block_size;
               bool compute_block = true;

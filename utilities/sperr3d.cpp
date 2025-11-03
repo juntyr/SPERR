@@ -336,6 +336,7 @@ int main(int argc, char* argv[])
     }
 
     QoZ::QoIMeta qoi_meta;
+    bool block_qoi = false;
 
     //std::cout<<qoi_tol<<" "<<qoi_id<<std::endl;
     if (qoi_tol>0 and qoi_id>0){
@@ -348,10 +349,15 @@ int main(int argc, char* argv[])
         //encoder->set_qoi_string(qoi_string);
         encoder->set_qoi_tol(qoi_tol);
         //encoder->set_qoi_block_size(qoi_block_size);
-        if (qoi_block_sizes[0] >= 1 && qoi_block_sizes[1] >= 1 && qoi_block_sizes[2] >= 1)
+        if (qoi_block_sizes[0] >= 1 && qoi_block_sizes[1] >= 1 && qoi_block_sizes[2] >= 1){
+            block_qoi = true;
             encoder->set_qoi_block_size(qoi_block_sizes[0],qoi_block_sizes[1],qoi_block_sizes[2]);
-        else if (qoi_block_size >= 1)
+        }
+        else if (qoi_block_size >= 1){
+            block_qoi = true; 
+            qoi_block_size[0]=qoi_block_size[1]=qoi_block_size[2]=qoi_block_size;
             encoder->set_qoi_block_size(qoi_block_size,qoi_block_size,qoi_block_size);
+        }
         else
             encoder->set_qoi_block_size(1,1,1);
             
@@ -470,7 +476,7 @@ int main(int argc, char* argv[])
           sigma = std::sqrt(mean_var[1]);
           if (qoi_tol>0 and qoi_id>0){
             auto qoi = QoZ::GetQOI<double>(qoi_meta, qoi_tol, 0.0);
-            if (qoi_block_size==1){
+            if (!block_qoi){
               auto qoi_err = sperr::calc_qoi_maxerr(inputd , outputd.data(), total_vals, qoi);
               qoi_err_abs = qoi_err[0];
               qoi_err_rel = qoi_err[1];
