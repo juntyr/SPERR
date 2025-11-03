@@ -230,7 +230,7 @@ int main(int argc, char* argv[])
 
 
   auto qoi_block_sizes = std::array<size_t, 3>{0, 0, 0};
-  app.add_option("--qoi_block_sizes", chunks,
+  app.add_option("--qoi_block_sizes", qoi_block_sizes,
                  "QoI block sizes. Default: 0 0 0")
       ->group("Compression settings");
 
