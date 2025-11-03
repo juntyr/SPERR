@@ -30,7 +30,7 @@ class SPERR3D_OMP_C {
   void set_qoi_base(double);
   void set_qoi_analytical(bool);
   void set_qoi_tol(double);
-  void set_qoi_block_size(int);
+  void set_qoi_block_size(size_t,size_t,size_t);
   void set_qoi_k(double);
   void set_high_prec(bool);
 #ifdef EXPERIMENTING
@@ -56,7 +56,9 @@ class SPERR3D_OMP_C {
   std::string qoi_string = "x^2";
   double qoi_tol = 0.0;
   //double block_qoi_tol = 0.0;
-  int qoi_block_size = 1;
+  //int qoi_block_size = 1;
+  auto qoi_block_sizes = std::array<size_t, 3>{1, 1, 1};
+  size_t qoi_block_ele_num = 1;
   double qoi_k = 3.0;
   bool m_high_prec = false;
 

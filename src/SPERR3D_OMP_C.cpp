@@ -91,9 +91,12 @@ void sperr::SPERR3D_OMP_C::set_qoi_tol(double q_tol)
 
 }
 
-void sperr::SPERR3D_OMP_C::set_qoi_block_size(int q_bs)
+void sperr::SPERR3D_OMP_C::set_qoi_block_size(size_t q_bs_x, size_t q_bs_y, size_t q_bs_z)
 {
-  qoi_block_size = q_bs;
+  qoi_block_sizes[0] = q_bs_x;
+  qoi_block_sizes[1] = q_bs_y;
+  qoi_block_sizes[2] = q_bs_z;
+  qoi_block_ele_num = q_bs_x * q_bs_y * q_bs_z;
 }
 
 void sperr::SPERR3D_OMP_C::set_qoi_k(double q_k)
@@ -123,12 +126,14 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
     return RTNType::WrongLength;
 
   // First, calculate dimensions of individual chunk indices.
-  if(qoi_meta.qoi_id>0 and qoi_tol>0 and qoi_block_size>1){
+  if(qoi_meta.qoi_id>0 and qoi_tol>0 and qoi_block_ele_num > 1){
+    size_t i=0;
     for(auto &cd:m_chunk_dims){
-      if(cd<qoi_block_size)
-        cd = qoi_block_size;
+      if(cd<qoi_block_sizes[i])
+        cd = qoi_block_sizes[i];
       else
-        cd -= cd%qoi_block_size;
+        cd -= cd%qoi_block_sizes[i];
+      i++;
     }
   }
   const auto chunk_idx = sperr::chunk_volume(m_dims, m_chunk_dims);
@@ -153,7 +158,7 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
 
   if(qoi_meta.qoi_id>0 and qoi_tol>0)
   {
-    if(qoi_block_size > 1){//regional 
+    if(qoi_block_ele_num > 1){//regional 
         //adjust qoieb
         double rate = 1.0;
       
@@ -161,10 +166,10 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
        
         //conf.regionalQoIeb=conf.qoiEB;//store original regional eb
         double num_blocks = 1;
-        double num_elements = 1;
+        //double num_elements = 1;
         for(int i=0; i<m_dims.size(); i++){
-            num_elements *= qoi_block_size;
-            num_blocks *= (m_dims[i] - 1) / qoi_block_size + 1;
+            //num_elements *= qoi_block_size;
+            num_blocks *= (m_dims[i] - 1) / qoi_block_sizes[i] + 1;
         }
 
         double q = 0.999;
@@ -172,7 +177,7 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
         if(((qoi_meta.qoi_id == 1 and qoi_meta.qoi_string == "x^3") or qoi_meta.qoi_id == 9 ) and qoi_block_size <=4)
           qoi_k = 2.0;
 
-        rate = estimate_rate_Hoeffdin(num_elements,1,q,qoi_k);
+        rate = estimate_rate_Hoeffdin(qoi_block_ele_num,1,q,qoi_k);
         //std::cout<<num_elements<<" "<<num_blocks<<" "<<conf.error_std_rate<<" "<<rate<<std::endl;
         
         rate = std::max(1.0,rate);//only effective for average. general: 1.0/sumai
@@ -181,16 +186,16 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
         
 
         if((qoi_meta.qoi_id == 1 and qoi_meta.qoi_string == "x") or qoi_meta.qoi_id == 11 ){
-            if(qoi_block_size <=4){//it is a random number. to Fix
+            if(qoi_block_ele_num <= 64){//it is a random number. to Fix
                 rate = std::min(4.0,rate);
             }
-            else if(qoi_block_size <=8){//it is a random number. to Fix
+            else if(qoi_block_ele_num <= 512){//it is a random number. to Fix
                 rate = std::min(8.0,rate);
             }
-            else if(qoi_block_size <=16){//it is a random number. to Fix
+            else if(qoi_block_ele_num <= 4096){//it is a random number. to Fix
                 rate = std::min(12.0,rate);
             }
-            else if(qoi_block_size <=32){//it is a random number. to Fix
+            else if(qoi_block_ele_num <= 32768){//it is a random number. to Fix
                 rate = std::min(16.0,rate);
             }
             else {
@@ -229,11 +234,11 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
           if(qoi_meta.qoi_id == 11){
             m_quality /= qoi_meta.lin_A;
           }
-          if(qoi_block_size>1){
+          if(qoi_block_ele_num>1){
             auto qoi = QoZ::GetQOI<double>(qoi_meta, qoi_tol, m_quality);
             compressor->set_qoi(qoi);
             compressor->set_qoi_tol(bs_qoi_tol);
-            compressor->set_qoi_block_size(qoi_block_size);
+            compressor->set_qoi_block_size(qoi_block_sizes[0],qoi_block_sizes[1],qoi_block_sizes[2]);
           }
       } 
       else{
@@ -253,7 +258,7 @@ auto sperr::SPERR3D_OMP_C::compress(const T* buf, size_t buf_len) -> RTNType
         if(qoi_block_size > 1){//regional 
           //adjust qoieb
           compressor->set_qoi_tol(bs_qoi_tol);
-          compressor->set_qoi_block_size(qoi_block_size);
+          compressor->set_qoi_block_size(qoi_block_sizes[0],qoi_block_sizes[1],qoi_block_sizes[2]);
         }
         auto qoi = QoZ::GetQOI<double>(qoi_meta, qoi_tol, pwe);
 

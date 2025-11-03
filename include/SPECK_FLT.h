@@ -56,7 +56,7 @@ class SPECK_FLT {
   void set_dims(dims_type);
   void set_qoi(std::shared_ptr<QoZ::concepts::QoIInterface<double> >);
   void set_qoi_tol(double);
-  void set_qoi_block_size(int);
+  void set_qoi_block_size(size_t,size_t,size_t);
   //void set_qoi_tol(double);
   std::shared_ptr<QoZ::concepts::QoIInterface<double> > get_qoi();
   auto integer_len() const -> size_t;
@@ -96,7 +96,8 @@ class SPECK_FLT {
   Outlier_Coder m_out_coder;
   std::shared_ptr<QoZ::concepts::QoIInterface<double> > qoi = nullptr;
   double qoi_tol = 0.0;
-  int qoi_block_size = 1;
+  auto qoi_block_sizes = std::array<size_t, 3>{1, 1, 1};
+  size_t qoi_block_ele_num = 1;
   Lossless_zstd zstd_encoder;
 
 

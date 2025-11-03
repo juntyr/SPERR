@@ -256,9 +256,12 @@ void sperr::SPECK_FLT::set_qoi_tol(double q_tol)
   qoi_tol = q_tol;
 }
 
-void sperr::SPECK_FLT::set_qoi_block_size(int q_bs)
+void sperr::SPECK_FLT::set_qoi_block_size(size_t q_bs_x, size_t q_bs_y, size_t q_bs_z)
 {
-  qoi_block_size = q_bs;
+  qoi_block_sizes[0] = q_bs_x;
+  qoi_block_sizes[1] = q_bs_y;
+  qoi_block_sizes[2] = q_bs_z;
+  qoi_block_ele_num = q_bs_x * q_bs_y * q_bs_z;
 }
 
 auto sperr::SPECK_FLT::integer_len() const -> size_t
@@ -612,9 +615,9 @@ FIXED_RATE_HIGH_PREC_LABEL:
     
     
   }
-  if(qoi!=nullptr and (qoi_block_size>1 or qoi->get_expression()!="x")){
+  if(qoi!=nullptr and (qoi_block_ele_num>1 or qoi->get_expression()!="x")){
 
-    if(qoi_block_size==1){//pointwise
+    if(qoi_block_ele_num==1){//pointwise
       //auto mean = m_conditioner.get_mean();
       //std::cout<<mean<<std::endl;
       std::vector<double>offsets(total_vals,0);
@@ -822,12 +825,12 @@ auto sperr::SPECK_FLT::block_qoi_outlier_correction(bool use_high_prec) -> RTNTy
   auto mean = m_conditioner.get_mean();
    
   size_t n1 = m_dims[2], n2 = m_dims[1], n3 = m_dims[0];
-  int block_size = qoi_block_size;
+  size_t block_size_x = qoi_block_size[0],block_size_y = qoi_block_size[1]，block_size_z = qoi_block_size[2];
   uint32_t dim0_offset = n2 * n3;
   uint32_t dim1_offset = n3;
-  uint32_t num_block_1 = (n1 - 1) / block_size + 1;
-  uint32_t num_block_2 = (n2 - 1) / block_size + 1;
-  uint32_t num_block_3 = (n3 - 1) / block_size + 1;
+  uint32_t num_block_1 = (n1 - 1) / block_size_z + 1;
+  uint32_t num_block_2 = (n2 - 1) / block_size_y + 1;
+  uint32_t num_block_3 = (n3 - 1) / block_size_x + 1;
   double* data = m_vals_d.data();
   double* ori_data = m_vals_orig.data();
   double * data_x_pos = data;
@@ -835,15 +838,15 @@ auto sperr::SPECK_FLT::block_qoi_outlier_correction(bool use_high_prec) -> RTNTy
   size_t corr_count = 0;
   double pw_qoi_tol = qoi->get_qoi_tolerance();
   for(size_t i=0; i<num_block_1; i++){
-      size_t size_1 = (i == num_block_1 - 1) ? n1 - i * block_size : block_size;
+      size_t size_1 = (i == num_block_1 - 1) ? n1 - i * block_size_z : block_size_z;
       double * data_y_pos = data_x_pos;
       double * ori_data_y_pos = ori_data_x_pos;
       for(size_t j=0; j<num_block_2; j++){
-          size_t size_2 = (j == num_block_2 - 1) ? n2 - j * block_size : block_size;
+          size_t size_2 = (j == num_block_2 - 1) ? n2 - j * block_size_y : block_size_y;
           double * data_z_pos = data_y_pos;
           double * ori_data_z_pos = ori_data_y_pos;
           for(size_t k=0; k<num_block_3; k++){
-              size_t size_3 = (k == num_block_3 - 1) ? n3 - k * block_size : block_size;
+              size_t size_3 = (k == num_block_3 - 1) ? n3 - k * block_size_x : block_size_x;
               //if((size_1!=1 and size_1<block_size) or (size_2!=1 and size_2<block_size) or size_3<block_size){
              
           

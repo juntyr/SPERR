@@ -228,6 +228,12 @@ int main(int argc, char* argv[])
   auto* qoi_bs_ptr = app.add_option("--qoi_bs", qoi_block_size, "QoI avg_block_size.")
                       ->group("Compression settings");
 
+
+  auto qoi_block_sizes = std::array<size_t, 3>{0, 0, 0};
+  app.add_option("--qoi_block_sizes", chunks,
+                 "QoI block sizes. Default: 0 0 0")
+      ->group("Compression settings");
+
   auto qoi_k = 3.0;
   auto* qoi_k_ptr = app.add_option("--qoi_k", qoi_k, "QoI k.")
                       ->group("Compression settings");
@@ -341,7 +347,15 @@ int main(int argc, char* argv[])
         //encoder->set_qoi_id(qoi_id);
         //encoder->set_qoi_string(qoi_string);
         encoder->set_qoi_tol(qoi_tol);
-        encoder->set_qoi_block_size(qoi_block_size);
+        //encoder->set_qoi_block_size(qoi_block_size);
+        if (qoi_block_sizes[0] >= 1 && qoi_block_sizes[1] >= 1 && qoi_block_sizes[2] >= 1)
+            encoder->set_qoi_block_size(qoi_block_sizes[0],qoi_block_sizes[1],qoi_block_sizes[2]);
+        else if (qoi_block_size >= 1)
+            encoder->set_qoi_block_size(qoi_block_size,qoi_block_size,qoi_block_size);
+        else
+            encoder->set_qoi_block_size(1,1,1);
+            
+
         encoder->set_qoi_k(qoi_k);
         //encoder->set_qoi_base(qoi_base);
         //encoder->set_qoi_analytical(qoi_analytical);
