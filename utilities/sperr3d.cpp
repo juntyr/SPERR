@@ -355,7 +355,7 @@ int main(int argc, char* argv[])
         }
         else if (qoi_block_size >= 1){
             block_qoi = true; 
-            qoi_block_size[0]=qoi_block_size[1]=qoi_block_size[2]=qoi_block_size;
+            qoi_block_sizes[0]=qoi_block_sizes[1]=qoi_block_sizes[2]=qoi_block_size;
             encoder->set_qoi_block_size(qoi_block_size,qoi_block_size,qoi_block_size);
         }
         else
