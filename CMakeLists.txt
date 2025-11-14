@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 3.14)
 
-project(SPERR VERSION 0.8.2 LANGUAGES CXX DESCRIPTION "Lossy Scientific Compression with SPERR")
+project(SPERR VERSION 0.8.2 LANGUAGES CXX C DESCRIPTION "Lossy Scientific Compression with SPERR")
 
 if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD "20" CACHE STRING "Choose the C++ Standard to use." FORCE)
@@ -44,14 +44,17 @@ if(USE_OMP)
   endif()
 endif()
 find_package(PkgConfig)
-find_package(SymEngine REQUIRED)
-pkg_check_modules(GMP REQUIRED gmp)
-if (GMP_FOUND)
-    message("GMP found.")
-else()
-    message("GMP not found.")
-endif()
+#find_package(SymEngine REQUIRED)
+#pkg_check_modules(GMP REQUIRED gmp)
+#if (GMP_FOUND)
+#    message("GMP found.")
+#else()
+#    message("GMP not found.")
+#endif()
 
+add_subdirectory(symengine)
+include_directories("${CMAKE_SOURCE_DIR}/symengine")
+include_directories("${CMAKE_SOURCE_DIR}/symengine/build")
 
 
 #
@@ -106,15 +109,15 @@ add_subdirectory( src )
 target_link_libraries(${PROJECT_NAME} PUBLIC symengine)
 target_link_libraries(${PROJECT_NAME} PUBLIC gmp)
 
-pkg_search_module(ZSTD IMPORTED_TARGET libzstd)
-if(ZSTD_FOUND)
-  message("Zstd found.")
-  target_link_libraries(${PROJECT_NAME} INTERFACE PkgConfig::ZSTD)
-else()
-  message("Zstd not found.")
-  add_subdirectory(zstd)
-  target_link_libraries(${PROJECT_NAME} INTERFACE zstd)
-endif()
+#pkg_search_module(ZSTD IMPORTED_TARGET libzstd)
+#if(ZSTD_FOUND)
+#  message("Zstd found.")
+#  target_link_libraries(${PROJECT_NAME} INTERFACE PkgConfig::ZSTD)
+#else()
+#  message("Zstd not found.")
+#  add_subdirectory(zstd)
+#  target_link_libraries(${PROJECT_NAME} INTERFACE zstd)
+#endif()
 
 
 #

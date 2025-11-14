@@ -3,6 +3,8 @@
 #ifndef SAMPLE_H
 #define SAMPLE_H
 
+typedef unsigned int uint;
+
 namespace sperr {
 
     /*

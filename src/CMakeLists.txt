@@ -35,16 +35,18 @@ endif()
 #
 # LTO
 #
-include(CheckIPOSupported)
-check_ipo_supported(RESULT ipo_supported LANGUAGES CXX)
-if( ipo_supported )
-    message(STATUS "IPO / LTO enabled")
-    set_property(TARGET SPERR PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-else()
+# include(CheckIPOSupported)
+# check_ipo_supported(RESULT ipo_supported LANGUAGES CXX)
+# if( ipo_supported )
+#     message(STATUS "IPO / LTO enabled")
+#     set_property(TARGET SPERR PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+# else()
     message(STATUS "IPO / LTO not supported")
-endif()
+# endif()
 
 set_target_properties( SPERR PROPERTIES VERSION ${SPERR_VERSION} )
+
+set_target_properties( SPERR PROPERTIES OUTPUT_NAME "QPET-SPERR" )
 
 #
 # The list of headers is formatted a little cumbersome, but don't change it!

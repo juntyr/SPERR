@@ -118,6 +118,27 @@ int sperr_comp_3d(
     void** dst,       /* Output: buffer for the output bitstream, allocated by this function */
     size_t* dst_len); /* Output: length of `dst` in byte */
 
+int qpet_sperr_comp_3d(
+    const void* src,
+    int is_float,
+    size_t dimx,
+    size_t dimy,
+    size_t dimz,
+    size_t chunk_x,
+    size_t chunk_y,
+    size_t chunk_z,
+    double data_pwe,
+    size_t nthreads,
+    void** dst,
+    size_t* dst_len,
+    const char* qoi,
+    double qoi_pwe,
+    size_t qoi_bs_x,
+    size_t qoi_bs_y,
+    size_t qoi_bs_z,
+    double qoi_k,
+    bool high_prec);
+
 /*
  * Decompress a 3D SPERR-compressed buffer that is produced by sperr_comp_3d().
  *

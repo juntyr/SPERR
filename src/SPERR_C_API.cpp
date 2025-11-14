@@ -8,6 +8,9 @@
 
 #include "SPERR3D_Stream_Tools.h"
 
+#include "qoi/QoI.hpp"
+#include "qoi/QoIInfo.hpp"
+
 auto C_API::sperr_comp_2d(const void* src,
                           int is_float,
                           size_t dimx,
@@ -213,6 +216,84 @@ auto C_API::sperr_comp_3d(const void* src,
   *dst = buf;
 
   return 0;
+}
+
+auto C_API::qpet_sperr_comp_3d(const void* src,
+                               int is_float,
+                               size_t dimx,
+                               size_t dimy,
+                               size_t dimz,
+                               size_t chunk_x,
+                               size_t chunk_y,
+                               size_t chunk_z,
+                               double data_pwe,
+                               size_t nthreads,
+                               void** dst,
+                               size_t* dst_len,
+                               const char* qoi,
+                               double qoi_pwe,
+                               size_t qoi_bs_x,
+                               size_t qoi_bs_y,
+                               size_t qoi_bs_z,
+                               double qoi_k,
+                               bool high_prec) -> int
+{
+    try {
+  // Examine if `dst` is pointing to a NULL pointer
+  if (*dst != nullptr)
+    return 1;
+  if (data_pwe <= 0.0)
+    return 2;
+  if (qoi_pwe <= 0.0)
+    return 2;
+  if ((qoi_bs_x <= 0) | (qoi_bs_y <= 0) | (qoi_bs_z <= 0))
+    return 2;
+  if (qoi_k <= 0.0)
+    return 2;
+
+  const auto dims = sperr::dims_type{dimx, dimy, dimz};
+  const auto chunks = sperr::dims_type{chunk_x, chunk_y, chunk_z};
+
+  // Setup the compressor. Very similar steps as in `utilities/sperr3d.cpp`.
+  const auto total_vals = dimx * dimy * dimz;
+  auto encoder = std::make_unique<sperr::SPERR3D_OMP_C>();
+  encoder->set_dims_and_chunks(dims, chunks);
+  encoder->set_num_threads(nthreads);
+  QoZ::QoIMeta qoi_meta;
+  qoi_meta.qoi_id = 14; // symbolic QoI
+  qoi_meta.qoi_string = qoi; // QoI expression
+  qoi_meta.qoi_base = std::exp(1.0); // base e by default
+  qoi_meta.analytical = true; // analytical, if possible
+  encoder->set_qoi_meta(qoi_meta);
+  encoder->set_tolerance(data_pwe);  // data absolute error bound
+  encoder->set_qoi_tol(qoi_pwe); // QoI absolute error bound
+  encoder->set_qoi_block_size(qoi_bs_x, qoi_bs_y, qoi_bs_z); // QoI average-over-block size, 1 for pointwise
+  encoder->set_qoi_k(qoi_k); // c=3 by default
+  encoder->set_high_prec(high_prec); // high precision, needed for small error bounds
+
+  auto rtn = sperr::RTNType::Good;
+  if (is_float)
+    rtn = encoder->compress(static_cast<const float*>(src), total_vals);
+  else  // double
+    rtn = encoder->compress(static_cast<const double*>(src), total_vals);
+  if (rtn != sperr::RTNType::Good)
+    return -1;
+
+  // Prepare the compressed bitstream.
+  auto stream = encoder->get_encoded_bitstream();
+  if (stream.empty())
+    return -1;
+  encoder.reset();
+  *dst_len = stream.size();
+  auto* buf = (uint8_t*)std::malloc(stream.size());
+  std::copy(stream.cbegin(), stream.cend(), buf);
+  *dst = buf;
+
+  return 0;
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return 0;
+    }
 }
 
 auto C_API::sperr_decomp_3d(const void* src,

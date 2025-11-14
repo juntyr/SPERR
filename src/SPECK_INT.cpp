@@ -273,7 +273,7 @@ auto sperr::SPECK_INT<T>::encoded_bitstream_len() const -> size_t
   //      `m_budget` happens to be exactly met after a sorting or refinement pass.
   //      In this case, we can also record all `m_total_bits` bits, same as outcome 1.
   //
-  auto bits_to_pack = std::min(m_budget, size_t{m_total_bits});
+  auto bits_to_pack = std::min(m_budget, static_cast<size_t>(m_total_bits));
   auto bit_in_byte = bits_to_pack / size_t{8};
   if (bits_to_pack % 8 != 0)
     ++bit_in_byte;
@@ -304,7 +304,7 @@ void sperr::SPECK_INT<T>::append_encoded_bitstream(vec8_type& buffer) const
 
   // Step 3: assemble the right amount of bits into bytes.
   // See discussion on the number of bits to pack in function `encoded_bitstream_len()`.
-  auto bits_to_pack = std::min(m_budget, size_t{m_total_bits});
+  auto bits_to_pack = std::min(m_budget, static_cast<size_t>(m_total_bits));
   m_bit_buffer.write_bitstream(ptr + header_size, bits_to_pack);
 }
 
